@@ -12,6 +12,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Schema(description = "유저 정보")
 @Data
 @Entity
 @Table(name = "\"member\"", schema = "public")
@@ -58,7 +59,8 @@ public class Member {
 	public Member() {
 	}
 
-	public Member(UUID id,
+	public Member(
+		UUID id,
 		String email,
 		String name,
 		String password,
@@ -66,6 +68,23 @@ public class Member {
 		String saltKey,
 		String flag) {
 		this.id = id;
+		this.email = email;
+		this.name = name;
+		this.password = password;
+		this.phone = phone;
+		this.saltKey = saltKey;
+		this.flag = flag;
+	}
+
+	public Member(
+		String id,
+		String email,
+		String name,
+		String password,
+		String phone,
+		String saltKey,
+		String flag) {
+		this.id = UUID.fromString(id);
 		this.email = email;
 		this.name = name;
 		this.password = password;
