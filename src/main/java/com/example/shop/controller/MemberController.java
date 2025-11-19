@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.shop.common.ResponseEntity;
 import com.example.shop.member.Member;
 import com.example.shop.member.MemberRepository;
 import com.example.shop.member.MemberRequest;
@@ -22,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("${api.v1}/members")
 public class MemberController {
+	// TODO: MemberRepository가 아닌 서비스를 생성해서 넣을 수 있게끔 수정해야 한다.
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -30,17 +33,20 @@ public class MemberController {
 		description = "public.member 테이블에 저장된 모든 회원을 조회한다."
 	)
 	@GetMapping
-	public List<Member> findAll() {
-		return memberRepository.findAll();
+	public ResponseEntity<List<Member>> getAll() {
+		return new ResponseEntity<>(
+			HttpStatus.OK.value(),
+			memberRepository.findAll(),
+			memberRepository.count()
+		);
 	}
-
 
 	@Operation(
 		summary = "회원 등록",
 		description = "요청으로 받은 회원 정보를 public.member 테이블에 저장한다."
 	)
 	@PostMapping
-	public Member create(@RequestBody MemberRequest request) {
+	public ResponseEntity<Member> create(@RequestBody MemberRequest request) {
 		Member member = new Member(
 			UUID.randomUUID(),
 			request.email(),
@@ -50,7 +56,15 @@ public class MemberController {
 			request.saltKey(),
 			request.flag()
 		);
-		return memberRepository.save(member);
+
+		Member memberSaved = memberRepository.save(member);
+		int cnt = 0;
+		if (memberSaved instanceof List) {
+			cnt = ((List<?>) memberSaved).size();
+		} else {
+			cnt = 1;
+		}
+		return new ResponseEntity<>(HttpStatus.OK.value(), memberSaved, cnt);
 	}
 
 	@Operation(
@@ -59,6 +73,7 @@ public class MemberController {
 		)
 	@PutMapping("{id}")
 	public Member update(@RequestBody MemberRequest request, @PathVariable UUID id) {
+		// TODO: ResponseEntity에 맞게 수정해야 한다.
 		Member member = new Member(
 			id,
 			request.email(),
@@ -77,6 +92,7 @@ public class MemberController {
 	)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable String id) {
+		// TODO: ResponseEntity에 맞게 수정해야한다.
 		memberRepository.deleteById(UUID.fromString(id));
 	}
 }

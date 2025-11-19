@@ -1,5 +1,6 @@
 package com.example.shop.member;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,18 +17,23 @@ import java.util.UUID;
 @Table(name = "\"member\"", schema = "public")
 public class Member {
 
+	@Schema(description = "유저의 UUID")
 	@Id
 	private UUID id;
 
+	@Schema(description = "유저의 email")
 	@Column(nullable = false, length = 50, unique = true)
 	private String email;
 
+	@Schema(description = "이름")
 	@Column(name = "\"name\"", length = 20)
 	private String name;
 
+	@Schema(description = "비밀번호")
 	@Column(name = "\"password\"", nullable = false, length = 100)
 	private String password;
 
+	@Schema(description = "전화번호")
 	@Column(nullable = false, length = 20, unique = true)
 	private String phone;
 
@@ -50,7 +56,6 @@ public class Member {
 	private String flag;
 
 	public Member() {
-
 	}
 
 	public Member(UUID id,
@@ -95,5 +100,4 @@ public class Member {
 			modifyId = id;
 		}
 	}
-
 }
